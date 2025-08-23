@@ -1,23 +1,30 @@
 
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv  # <-- make sure python-dotenv is installed
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Load .env file
+load_dotenv()  # by default, it loads .env in your project root
+
+# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Security
+SECRET_KEY = os.getenv('SECRET', 'fallback-secret-key')  # fallback in case .env fails
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'on')
+ALLOWED_HOSTS = ['*']  # or set from .env if you want
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+-_!%e=qn2v+xhoh09gj#7itk+yjl+v+51oq^buw17!*b&h6)c'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
+# Database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'month5_db'),
+        'USER': os.getenv('DB_USER', 'admin'),
+        'PASSWORD': os.getenv('DB_PASSWORD', '1'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
+}
 # Application definition
 
 INSTALLED_APPS = [
@@ -29,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'product',
     'rest_framework',
+    'users',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -61,15 +70,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shop_api.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -89,6 +90,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# AUTH_USER_MODEL = "users.CustomUser"
 
 
 # Internationalization

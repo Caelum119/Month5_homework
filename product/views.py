@@ -1,11 +1,32 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import ProductSerializer
-from .models import Product
+from rest_framework import generics
+from .models import Category, Product, Review
+from .serializers import CategorySerializer, ProductSerializer, ReviewSerializer
 
-@api_view(http_method_names=['GET'])
-def product_list_api_view(request):
-    products = Product.objects.all()
-    data = ProductSerializer(instance=products, many=True).data
-    return Response(data=data, status=status.HTTP_200_OK)
+# ---------------- CATEGORIES ----------------
+class CategoryListCreateView(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+# ---------------- PRODUCTS ----------------
+class ProductListCreateView(generics.ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+# ---------------- REVIEWS ----------------
+class ReviewListCreateView(generics.ListCreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
