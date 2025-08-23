@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import CreateAPIView
+from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import (
     RegisterValidateSerializer,
@@ -18,6 +19,8 @@ import string
 
 
 class AuthorizationAPIView(APIView):
+    
+    @swagger_auto_schema(request_body=AuthValidateSerializer)
     def post(self, request):
         serializer = AuthValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -38,6 +41,7 @@ class AuthorizationAPIView(APIView):
             status=status.HTTP_401_UNAUTHORIZED,
             data={'error': 'User credentials are wrong!'}
         )
+
 
 
 class RegistrationAPIView(CreateAPIView):
