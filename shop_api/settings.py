@@ -1,33 +1,39 @@
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv  # <-- make sure python-dotenv is installed
+from dotenv import load_dotenv 
 
-# Load .env file
-load_dotenv()  # by default, it loads .env in your project root
-
-# Base directory
+load_dotenv() 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
-SECRET_KEY = os.getenv('SECRET', 'fallback-secret-key')  # fallback in case .env fails
+SECRET_KEY = os.getenv('SECRET', 'fallback-secret-key')  
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'on')
-ALLOWED_HOSTS = ['*']  # or set from .env if you want
+ALLOWED_HOSTS = ['*']  
+AUTH_USER_MODEL = 'users.CustomUser'
 
-# Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'month5_db'),
-        'USER': os.getenv('DB_USER', 'admin'),
-        'PASSWORD': os.getenv('DB_PASSWORD', '1'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# Application definition
+
+
+#  'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'month5_db'),
+#         'USER': os.getenv('DB_USER', 'admin'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', '1'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+
+
+
+
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
