@@ -42,3 +42,22 @@ class ReviewSerializer(serializers.ModelSerializer):
         if len(value.strip()) < 5:
             raise serializers.ValidationError("Review text must be at least 5 characters long.")
         return value
+
+
+from rest_framework import serializers
+from .models import Product, Category, Review
+
+class ProductValidateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+class CategoryValidateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
+
+class ReviewValidateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = "__all__"

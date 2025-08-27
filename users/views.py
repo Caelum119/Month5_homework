@@ -38,9 +38,8 @@ class RegistrationAPIView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         with transaction.atomic():
-            user = serializer.save()  # uses serializer.create()
+            user = serializer.save()  
 
-            # Create a random 6-digit confirmation code
             code = ''.join(random.choices(string.digits, k=6))
             ConfirmationCode.objects.create(user=user, code=code)
 
@@ -67,7 +66,6 @@ class ConfirmUserAPIView(APIView):
             user.is_active = True
             user.save()
 
-            # Delete confirmation code and return token
             ConfirmationCode.objects.filter(user=user).delete()
             token, _ = Token.objects.get_or_create(user=user)
 

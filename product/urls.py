@@ -1,20 +1,20 @@
 from django.urls import path
 from .views import (
-    CategoryListCreateView, CategoryDetailView,
-    ProductListCreateView, ProductDetailView,
-    ReviewListCreateView, ReviewDetailView
+    CategoryListCreateAPIView, CategoryDetailAPIView,
+    ProductListCreateAPIView, ProductDetailAPIView,
+    ReviewListCreateAPIView, ReviewDetailAPIView
 )
 
 urlpatterns = [
     
-    path("categories/", CategoryListCreateView.as_view(), name="category-list-create"),
-    path("categories/<int:pk>/", CategoryDetailView.as_view(), name="category-detail"),
+    path("categories/", CategoryListCreateAPIView.as_view(), name="category-list-create"),
+    path("categories/<int:pk>/", CategoryDetailAPIView.as_view(), name="category-detail"),
 
     
-    path("products/", ProductListCreateView.as_view(), name="product-list-create"),
-    path("products/<int:pk>/", ProductDetailView.as_view(), name="product-detail"),
+    path("products/", ProductListCreateAPIView.as_view(), name="product-list-create"),
+    path("products/<int:pk>/", ProductDetailAPIView.as_view(), name="product-detail"),
 
     
-    path("reviews/", ReviewListCreateView.as_view(), name="review-list-create"),
-    path("reviews/<int:pk>/", ReviewDetailView.as_view(), name="review-detail"),
+    path("reviews/", ReviewListCreateAPIView.as_view(), name="review-list-create"),
+    path("reviews/<int:pk>/", ReviewDetailAPIView.as_view(), name="review-detail"),
 ]
