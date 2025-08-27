@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.timezone import now
+from django.contrib.auth import get_user_model
 
 
 class Category(models.Model):
@@ -12,9 +13,10 @@ class Category(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=100)
-    descriprion = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.title

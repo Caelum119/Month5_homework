@@ -1,12 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 class IsModeratorPermission(BasePermission):
-    """
-    Permission for moderators:
-    - Must be is_staff=True
-    - Can view, update, delete any product
-    - Cannot create products (POST forbidden)
-    """
+    
 
     def has_permission(self, request, view):
         if request.method == 'POST':

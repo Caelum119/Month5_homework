@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv 
+from datetime import timedelta
 
 load_dotenv() 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +32,7 @@ DATABASES = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',  
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',  # optional, keep for admin login
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -38,6 +40,13 @@ REST_FRAMEWORK = {
     ],
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+}
 
 
 INSTALLED_APPS = [
@@ -53,6 +62,9 @@ INSTALLED_APPS = [
     'users',
     'drf_yasg',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+
 ]
 
 MIDDLEWARE = [

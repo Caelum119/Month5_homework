@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
@@ -53,3 +54,12 @@ class ConfirmationSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid confirmation code")
         data['confirmation'] = confirmation
         return data
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        if user.birth_date:
+            token['birth_date'] = str(user.birth_date)
+        return token

@@ -9,12 +9,34 @@ from product.serializers import (
     CategorySerializer, ProductSerializer, ReviewSerializer,
     ProductValidateSerializer, CategoryValidateSerializer, ReviewValidateSerializer
 )
+from common.validators import validate_age
+from common.permissions import IsOwner, IsAnonymous
+from rest_framework.permissions import BasePermission
+
+
 
 PAGE_SIZE = 5
 
-# ----------------------------
-# Pagination class
-# ----------------------------
+from rest_framework.permissions import BasePermission
+
+class IsOwnerOrSuperuser(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+        if request.method == "POST" and request.user.is_authenticated:
+            from common.validators import validate_age
+            try:
+                validate_age(request.user)
+                return True
+            except:
+                return False
+
+        if request.method in ["GET", "HEAD", "OPTIONS"] and request.user.is_authenticated:
+            return True
+
+        return False
+
 class CustomPagination(PageNumberPagination):
     page_size = PAGE_SIZE
 
@@ -26,9 +48,7 @@ class CustomPagination(PageNumberPagination):
             ("results", data)
         ]))
 
-# ----------------------------
-# Category Views
-# ----------------------------
+
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -56,22 +76,27 @@ class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
         category.save()
         return Response(CategorySerializer(category).data)
 
-# ----------------------------
-# Product Views
-# ----------------------------
+
+
 class ProductListCreateAPIView(ListCreateAPIView):
-    queryset = Product.objects.select_related('category').all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    pagination_class = CustomPagination
-    permission_classes = [IsModeratorPermission]
+    permission_classes = [IsOwnerOrSuperuser]
 
     def post(self, request, *args, **kwargs):
-        # POST is blocked automatically for moderators
+        validate_age(request.user)  
+
         serializer = ProductValidateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        product = Product.objects.create(**serializer.validated_data)
-        return Response(ProductSerializer(product).data, status=status.HTTP_201_CREATED)
-
+        
+        product = Product.objects.create(
+            title=serializer.validated_data['title'],
+            description=serializer.validated_data['description'],
+            price=serializer.validated_data['price'],
+            category=serializer.validated_data['category'],
+            owner=request.user,
+        )
+        return Response(ProductSerializer(product).data, status=201)
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.select_related('category').all()
@@ -88,9 +113,7 @@ class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
         product.save()
         return Response(ProductSerializer(product).data)
 
-# ----------------------------
-# Review Views
-# ----------------------------
+
 class ReviewListCreateAPIView(ListCreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
