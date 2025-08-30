@@ -8,6 +8,8 @@ from rest_framework.generics import CreateAPIView
 from drf_yasg.utils import swagger_auto_schema
 import random
 import string
+from .redis_codes import get_confirmation_code, delete_confirmation_code
+
 
 from .serializers import RegisterValidateSerializer, AuthValidateSerializer, ConfirmationSerializer
 from .models import ConfirmationCode
@@ -51,27 +53,20 @@ class RegistrationAPIView(CreateAPIView):
         )
 
 
+
 class ConfirmUserAPIView(APIView):
-
-    @swagger_auto_schema(request_body=ConfirmationSerializer)
     def post(self, request):
-        serializer = ConfirmationSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        user_id = request.data.get("user_id")
+        code = request.data.get("code")
 
-        user_id = serializer.validated_data['user_id']
+        if not user_id or not code:
+            return Response({"error": "Missing parameters"}, status=400)
 
-        with transaction.atomic():
-            user = User.objects.get(id=user_id)
-            user.is_active = True
-            user.save()
+        stored_code = get_confirmation_code(user_id)
 
-            ConfirmationCode.objects.filter(user=user).delete()
-            token, _ = Token.objects.get_or_create(user=user)
+        if stored_code != code:
+            return Response({"error": "Invalid code"}, status=400)
 
-        return Response(
-            status=status.HTTP_200_OK,
-            data={
-                'message': 'User account successfully activated',
-                'key': token.key
-            }
-        )
+        delete_confirmation_code(user_id)
+        return Response({"success": "User confirmed"})
+

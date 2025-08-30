@@ -12,6 +12,8 @@ from product.serializers import (
 from common.validators import validate_age
 from common.permissions import IsOwner, IsAnonymous
 from rest_framework.permissions import BasePermission
+from django.core.cache import cache
+
 
 
 
@@ -141,3 +143,20 @@ class ReviewDetailAPIView(RetrieveUpdateDestroyAPIView):
             setattr(review, field, value)
         review.save()
         return Response(ReviewSerializer(review).data)
+
+
+
+
+
+
+
+def get(self, request, *args, **kwargs):
+        cached_data = cache.get("product_list")
+        if cached_data:
+            print("работает редис!")
+            return Response(data=cached_data, status=status.HTTP_200_OK)
+        response = super().get(request, *args, **kwargs)
+        print("обычный response")
+        if response.data.get("total", 0) > 0:
+            cache.set("product_list", response.data, timeout=120)
+        return response
