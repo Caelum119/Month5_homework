@@ -9,6 +9,8 @@ from drf_yasg.utils import swagger_auto_schema
 import random
 import string
 from .redis_codes import get_confirmation_code, delete_confirmation_code
+from users.tasks import send_otp_email
+
 
 
 from .serializers import RegisterValidateSerializer, AuthValidateSerializer, ConfirmationSerializer
@@ -25,6 +27,8 @@ class AuthorizationAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data['user']
+        send_otp_email.delay(email, code)
+
 
         token, _ = Token.objects.get_or_create(user=user)
         return Response(data={'key': token.key})

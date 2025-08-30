@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv 
 from datetime import timedelta
+from celery.schedules import crontab
 
 load_dotenv() 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -206,4 +207,19 @@ CACHES = {
 }
 
 
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/6"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/6"
 
+EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_PORT = 587  
+EMAIL_USE_TLS = True  
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD") 
+
+
+CELERY_BEAT_SCHEDULE = {
+    'say-hello-every-minute': {
+        'task': 'users.tasks.print_hello',
+        'schedule': crontab(minute='*/1'),  
+    },
+}
