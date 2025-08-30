@@ -63,3 +63,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user.birth_date:
             token['birth_date'] = str(user.birth_date)
         return token
+    
+
+class GoogleLoginSerializer(serializers.Serializer):
+    code = serializers.CharField()

@@ -16,5 +16,12 @@ uritemplate==4.1.1
 djangorestframework-simplejwt==5.5.1
 django-cors-headers==4.7.0
 gunicorn==23.0.0
+certifi==2025.8.3
+charset-normalizer==3.4.3
+idna==3.10
+requests==2.32.4
+urllib3==2.5.0
+
+
 
 
